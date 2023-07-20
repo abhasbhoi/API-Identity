@@ -5,3 +5,5 @@
 /APIIdenttity/.vs
 /APIIdenttity/WebAPIBase/bin/Debug/net6.0
 /APIIdenttity/WebAPIBase/obj
+/APIIdenttity/APIIdentity/bin/Debug/net6.0
+/APIIdenttity/APIIdentity/obj
