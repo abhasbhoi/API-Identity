@@ -9,6 +9,8 @@ using APIIdentity.Repository.Contract;
 using Serilog;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using APIIdentity.Authentication;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,22 +26,33 @@ builder.Services.AddCors(option => option.AddPolicy(name: MyAllowSpecificOrigins
 // add services related to controller and HTTP requests
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<MyAppDBContext>(opt => opt.UseInMemoryDatabase("Employees"));
-// Register instances
+//builder.Services.AddDbContext<MyAppDBContext>(opt => opt.UseInMemoryDatabase("Employees"));
+
+// EF DB Connection
+builder.Services.AddDbContext<MyAppDBContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// For Identity  
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<MyAppDBContext>()
+                .AddDefaultTokenProviders(); ;
+
+
+//Register instances
 builder.Services.AddScoped<IEmployeeBusinessLayer, EmployeeBusinessLayer>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c => {
+builder.Services.AddSwaggerGen(c =>
+{
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
-        Title = "WebAPI Base V1"
+        Title = "API Identity V1"
     });
     c.SwaggerDoc("v2", new OpenApiInfo
     {
         Version = "v2",
-        Title = "WebAPI Base V2"
+        Title = "API Identity V2"
     });
 
     c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
